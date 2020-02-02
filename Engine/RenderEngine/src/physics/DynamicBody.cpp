@@ -1,8 +1,11 @@
 #include "DynamicBody.h"
 #include "glm/gtx/quaternion.hpp"
+#define EPSILON 0.003f
 
 DynamicBody::DynamicBody(Object* object, int shape) : RigidBody(object, shape)
 {
+	
+	m_type = DYNAMIC;
 	if (shape == SPHERE) {
 		float radius = static_cast<Sphere*>(m_shape)->getRadius();
 		m_mass = 1.0;
@@ -20,6 +23,7 @@ DynamicBody::DynamicBody(Object* object, int shape) : RigidBody(object, shape)
 
 DynamicBody::DynamicBody(Object* object, int shape, float mass) : RigidBody(object, shape)
 {
+	m_type = DYNAMIC;
 	if (shape == SPHERE) {
 		float radius = static_cast<Sphere*>(m_shape)->getRadius();
 		m_mass = mass;
@@ -40,6 +44,12 @@ DynamicBody::DynamicBody(Object* object, int shape, float mass) : RigidBody(obje
 void DynamicBody::integrate(float dt)
 {
 	//Translation
+	if (glm::abs(m_linearVelocity).x < EPSILON)
+		m_linearVelocity.x = 0.0;
+	if (glm::abs(m_linearVelocity).y < EPSILON)
+		m_linearVelocity.y = 0.0;
+	if (glm::abs(m_linearVelocity).z < EPSILON)
+		m_linearVelocity.z = 0.0;
 	glm::vec3 oldPos = m_shape->getPosition();
 	glm::vec3 newPos = oldPos + m_linearVelocity * dt;
 	m_object->setPosition(newPos);
@@ -66,6 +76,11 @@ void DynamicBody::applyForce(glm::vec3 force)
 void DynamicBody::setInitialVelocity(glm::vec3 v)
 {
 	m_linearVelocity = v;
+}
+
+void DynamicBody::setInitialAngularVelocity(glm::vec3 w)
+{
+	m_angularVelocity = w;
 }
 
 void DynamicBody::setMass(float mass)

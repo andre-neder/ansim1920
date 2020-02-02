@@ -9,6 +9,7 @@ struct Collision {
 	RigidBody* j;
 	glm::vec3 normal;
 	glm::vec3 contact;
+	float d;
 };
 
 class RigidBodyPhysics : public Physics{

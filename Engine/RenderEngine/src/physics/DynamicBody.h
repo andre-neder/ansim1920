@@ -8,5 +8,6 @@ public:
 	void integrate(float dt) override;
 	void applyForce(glm::vec3 force) override;
 	void setInitialVelocity(glm::vec3 v) override;
+	void setInitialAngularVelocity(glm::vec3 w) override;
 	void setMass(float mass);
 };

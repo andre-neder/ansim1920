@@ -8,11 +8,14 @@ RigidBody::RigidBody(Object* object, int shape)
 	}
 	else if(shape == PLANE){
 		m_shape = new Plane(m_object->getPosition(), m_object->getRotationMatrix(), glm::mat3(m_object->getNormalMatrix()) * glm::vec3(0.0, 1.0, 0.0));
+		glm::vec3 x = glm::normalize(glm::mat3(m_object->getNormalMatrix()) * glm::vec3(0.0, 1.0, 0.0));
+		std::cout << x.x << " " << x.y << " " << x.z << " "<< std::endl;
 	}
 	else {
 		std::cout << "Shape "<< shape <<" not Supported" << std::endl;
 	}
-	m_bounciness = 0.5f;
+
+	m_bounciness = 1.0f;
 	m_frictionCoefficient = 0.05;
 	m_linearVelocity = glm::vec3(0.0);
 	m_linearAcceleration = glm::vec3(0.0);
@@ -38,6 +41,14 @@ void RigidBody::setLinearMomentum(glm::vec3 p)
 void RigidBody::setAngularVelocity(glm::vec3 w)
 {
 	m_angularVelocity = w;
+}
+
+void RigidBody::clearForce()
+{
+
+	//Clear Force
+	m_force = glm::vec3(0.0);
+
 }
 
 Object* RigidBody::getObject()
@@ -78,6 +89,11 @@ glm::vec3 RigidBody::getLinearMomentum()
 glm::mat3 RigidBody::getLocalInertiaTensorInverse()
 {
 	return m_localInertiaTensorInverse;
+}
+
+int RigidBody::getType()
+{
+	return m_type;
 }
 
 glm::vec3 RigidBody::getForce()

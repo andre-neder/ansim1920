@@ -112,7 +112,7 @@ void sceneInit() {
 	Mesh* sphereMesh = new Mesh(MODEL_PATH"sphere.obj");
 	Mesh* suzanneMesh = new Mesh(MODEL_PATH"suzanne.obj");
 	//Materials
-	Material* billard_0 = new Material(glm::vec3(1.0, 1.0,1.0), 1.0, 0.0);
+	Material* billard_0 = new Material(TEXTURE_PATH"billard_8.png", "", "", "", "");
 	Material* billard_1 = new Material(TEXTURE_PATH"billard_1.png", "", "", "", "");
 	Material* billard_2 = new Material(TEXTURE_PATH"billard_2.png", "", "", "", "");
 	Material* billard_3 = new Material(TEXTURE_PATH"billard_3.png", "", "", "", "");
@@ -137,6 +137,7 @@ void sceneInit() {
 	std::cout << rs2->getMass() << std::endl;
 	rbp->addRigidBody(rs2);
 	rs2->setInitialVelocity(glm::vec3(0.0, 0.0, -10.0));
+	//rs2->setInitialAngularVelocity(glm::vec3(10.0, 0.0, 0.0));
 
 	Object* ball001 = new Object("ball001",sphereMesh, billard_1);
 	ball001->setTransforms(glm::vec3(0.0,1.0,-5.0), glm::vec3(0.0), glm::vec3(1.0));
@@ -144,7 +145,7 @@ void sceneInit() {
 	rbp->addRigidBody(new DynamicBody(ball001, SPHERE, billardBallMass));
 
 	Object* ball003 = new Object("ball003", sphereMesh, billard_3);
-	ball003->setTransforms(glm::vec3(-1.5, 1.0, -3.0), glm::vec3(0.0), glm::vec3(1.0));
+	ball003->setTransforms(glm::vec3(-1.5, 1.0, -7.0), glm::vec3(0.0), glm::vec3(1.0));
 	scene->addObject(ball003);
 	rbp->addRigidBody(new DynamicBody(ball003, SPHERE, billardBallMass));
 
@@ -171,7 +172,7 @@ void sceneInit() {
 
 	//Billardtable
 	Object* plane001 = new Object("plane001",cubeMesh, blue);
-	plane001->setTransforms(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0,0.0,0.0), glm::vec3(billardTableWidth, 1.0, billardTableLength));
+	plane001->setTransforms(glm::vec3(0.0, -0.0, 0.0), glm::vec3(0.0,0.0,0.0), glm::vec3(billardTableWidth, 1.0, billardTableLength));
 	scene->addObject(plane001);
 	rbp->addRigidBody(new StaticBody(plane001, PLANE));
 
@@ -209,11 +210,6 @@ void sceneInit() {
 	std::cout << "Done (" << glfwGetTime() - startinit << " s)" << std::endl;
 }
 
-void resetScene() {
-	simulationStarted = false;
-	delete scene;
-	sceneInit();
-}
 
 void MainMenuBar(GLFWwindow* window)
 {
@@ -224,9 +220,7 @@ void MainMenuBar(GLFWwindow* window)
 			if (ImGui::MenuItem("Exit", "")) {
 				glfwSetWindowShouldClose(window, 1);
 			}
-			if (ImGui::MenuItem("Reset Scene", "")) {
-				resetScene();
-			}
+
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Options"))
@@ -287,10 +281,10 @@ void MainMenuBar(GLFWwindow* window)
 				ImGui::Text(ss.str().c_str(), selected);
 				ss.str("");
 				ImGui::NextColumn();
-				ss << "Inertia Tensor Inverse:";
-				ss << "\n" << rigidBodys->at(selected)->getLocalInertiaTensorInverse()[0].x << "\t" << rigidBodys->at(selected)->getLocalInertiaTensorInverse()[0].y << "\t" << rigidBodys->at(selected)->getLocalInertiaTensorInverse()[0].z;
-				ss << "\n" << rigidBodys->at(selected)->getLocalInertiaTensorInverse()[1].x << "\t" << rigidBodys->at(selected)->getLocalInertiaTensorInverse()[1].y << "\t" << rigidBodys->at(selected)->getLocalInertiaTensorInverse()[1].z;
-				ss << "\n" << rigidBodys->at(selected)->getLocalInertiaTensorInverse()[2].x << "\t" << rigidBodys->at(selected)->getLocalInertiaTensorInverse()[2].y << "\t" << rigidBodys->at(selected)->getLocalInertiaTensorInverse()[2].z;
+				ss << "Applied Force:";
+				ss << "\nX: " << rigidBodys->at(selected)->getForce().x << " kgm/s^2 ";
+				ss << "\nY: " << rigidBodys->at(selected)->getForce().y << " kgm/s^2 ";
+				ss << "\nZ: " << rigidBodys->at(selected)->getForce().z << " kgm/s^2 ";
 				ImGui::Text(ss.str().c_str(), selected);
 				ss.str("");
 				ImGui::NextColumn();

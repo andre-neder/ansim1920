@@ -2,6 +2,10 @@
 #include "../Object.h"
 #include "Shape.h"
 
+#define DYNAMIC 1
+#define STATIC 0
+
+
 class RigidBody {
 public:
 	//Constructor
@@ -10,13 +14,15 @@ public:
 	virtual void integrate(float dt) = 0;
 	virtual void applyForce(glm::vec3 force) = 0;
 	virtual void setInitialVelocity(glm::vec3 v) = 0;
+	virtual void setInitialAngularVelocity(glm::vec3 w) = 0;
 	void setLinearVelocity(glm::vec3 v);
 	void setLinearMomentum(glm::vec3 p);
 	void setAngularVelocity(glm::vec3 w);
+	void clearForce();
 	//Getters
 	Object* getObject();
 	Shape* getShape();
-	
+
 	glm::vec3 getLinearVelocity();
 	glm::vec3 getAngularVelocity();
 	glm::vec3 getLinearMomentum();
@@ -24,6 +30,8 @@ public:
 
 	glm::mat3 getLocalInertiaTensorInverse();
 	
+	int getType();
+
 	float getBounciness();
 	float getFrictionCoefficient();
 	float getMass();
@@ -31,6 +39,7 @@ public:
 protected:
 	Object* m_object;
 	Shape* m_shape;
+	int m_type;
 	
 	float m_mass;
 	float m_massInverse;

@@ -1,6 +1,5 @@
 #include "RigidBodyPhysics.h"
-
-
+#define EPSILON 0.003f
 RigidBodyPhysics::RigidBodyPhysics()
 {
 
@@ -18,6 +17,7 @@ void RigidBodyPhysics::update(float dt)
 	//std::vector<Collision*> collisions;
 	for (int i = 0; i < m_rigidBodys.size(); i++) {
 		m_rigidBodys[i]->clearForce();
+		m_rigidBodys[i]->clearTorque();
 		m_rigidBodys[i]->applyForce(m_gravity * m_rigidBodys[i]->getMass());
 		for (int j = 0; j < m_rigidBodys.size(); j++) {
 			if (i <= j) // Collision with itself
@@ -117,38 +117,36 @@ void RigidBodyPhysics::calculateCollision(Collision* c)
 	float s = -(1.0 + c->i->getBounciness()) * (glm::dot(c->normal, c->i->getLinearVelocity() - c->j->getLinearVelocity()) + (glm::dot(c->i->getLinearVelocity(), ra_cross_n) - glm::dot(c->j->getAngularVelocity(), rb_cross_n)));
 	float t = c->i->getMassInverse() + c->j->getMassInverse() + glm::dot(ra_cross_n * c->i->getLocalInertiaTensorInverse(), ra_cross_n) + glm::dot(rb_cross_n * c->j->getLocalInertiaTensorInverse(), rb_cross_n);
 	float p = s / t;
-	
 
-	//Normal Force and Frictional Force
-	if (c->i->getType() == STATIC && glm::abs(glm::normalize(c->normal)) == glm::abs(glm::normalize(m_gravity))) {
-		c->j->applyForce(-m_gravity * c->j->getMass());//NormalForce
-		if(c->j->getLinearVelocity() != glm::vec3(0.0)) //FrictionalForce
-			c->j->applyForce(glm::length(m_gravity)*-glm::normalize(c->j->getLinearVelocity()) * c->j->getFrictionCoefficient());
-	}
-	if (c->j->getType() == STATIC && glm::abs(glm::normalize(c->normal)) == glm::abs(glm::normalize(m_gravity))) {
-		c->i->applyForce(-m_gravity * c->i->getMass());
-		if (c->i->getLinearVelocity() != glm::vec3(0.0))
-			c->i->applyForce(glm::length(m_gravity) * -glm::normalize(c->i->getLinearVelocity()) * c->i->getFrictionCoefficient());
-	}
+		
+	//Friction
+	//glm::vec3 vr = (c->j->getLinearVelocity() - c->i->getLinearVelocity());
+	//glm::vec3 tangent = glm::normalize(vr - glm::dot(vr,c->normal) * c->normal);
+	//float s = -(1.0 + c->i->getBounciness()) * (glm::dot(tangent, c->i->getLinearVelocity() - c->j->getLinearVelocity()));
+	//float t = c->i->getMassInverse() + c->j->getMassInverse();
+	//float p = s / t;
 
-	//Laut VL
+	//float jt = -glm::dot(vr, tangent);
+	//jt /= c->i->getMassInverse() + c->j->getMassInverse();
+	//float mu_static = glm::sqrt(c->i->getStaticFriction() * c->i->getStaticFriction() + c->j->getStaticFriction() * c->j->getStaticFriction());
+
+	//glm::vec3 frictionImpuls;
+	//if (glm::abs(jt) < p * mu_static)
+	//	frictionImpuls = jt * tangent;
+	//else {
+	//	float mu_dynamic = glm::sqrt(c->i->getDynamicFriction() * c->i->getDynamicFriction() + c->j->getDynamicFriction() * c->j->getDynamicFriction());
+	//	frictionImpuls = -p * tangent * mu_dynamic;
+	//}
+	//c->i->setLinearVelocity(c->i->getLinearVelocity() + (p * c->i->getMassInverse()) * frictionImpuls);
+	//c->j->setLinearVelocity(c->j->getLinearVelocity() - (p * c->j->getMassInverse()) * frictionImpuls);
+
+	//Rotation
 	//glm::vec3 rA_cross_pn = glm::cross(c->normal * p, rA);
 	//glm::vec3 rB_cross_pn = glm::cross(c->normal* p,rB);
+	//c->i->setAngularVelocity(c->i->getAngularVelocity() + c->i->getLocalInertiaTensorInverse() * rA_cross_pn);
+	//c->j->setAngularVelocity(c->j->getAngularVelocity() - c->j->getLocalInertiaTensorInverse() * rB_cross_pn);
 
-	//Funktioniert so halb
-	glm::vec3 rA_cross_pn = glm::cross(c->j->getLinearVelocity(), rA);
-	if (rA_cross_pn != glm::vec3(0.0))
-		rA_cross_pn = glm::normalize(rA_cross_pn) * p;
-
-	glm::vec3 rB_cross_pn = glm::cross(c->i->getLinearVelocity(), rB);
-	if (rB_cross_pn != glm::vec3(0.0))
-		rB_cross_pn = glm::normalize(rB_cross_pn) * p;
-
-
-	//Set new Velocities
-	c->i->setAngularVelocity(c->i->getAngularVelocity() + c->i->getLocalInertiaTensorInverse() * rA_cross_pn);
-	c->j->setAngularVelocity(c->j->getAngularVelocity() - c->j->getLocalInertiaTensorInverse() * rB_cross_pn);
-	
+	//Translation
 	c->i->setLinearVelocity(c->i->getLinearVelocity() + (p * c->i->getMassInverse()) * c->normal);
 	c->j->setLinearVelocity(c->j->getLinearVelocity() - (p * c->j->getMassInverse()) * c->normal);
 }

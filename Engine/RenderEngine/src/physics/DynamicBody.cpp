@@ -46,10 +46,16 @@ void DynamicBody::integrate(float dt)
 	//Translation
 	if (glm::abs(m_linearVelocity).x < EPSILON)
 		m_linearVelocity.x = 0.0;
-	if (glm::abs(m_linearVelocity).y < EPSILON)
+	//if (glm::abs(m_linearVelocity).y < EPSILON)
 		m_linearVelocity.y = 0.0;
 	if (glm::abs(m_linearVelocity).z < EPSILON)
 		m_linearVelocity.z = 0.0;
+	//if (glm::abs(m_angularVelocity).x < EPSILON)
+	//	m_angularVelocity.x = 0.0;
+	//if (glm::abs(m_angularVelocity).y < EPSILON)
+	//	m_angularVelocity.y = 0.0;
+	//if (glm::abs(m_angularVelocity).z < EPSILON)
+	//	m_angularVelocity.z = 0.0;
 	glm::vec3 oldPos = m_shape->getPosition();
 	glm::vec3 newPos = oldPos + m_linearVelocity * dt;
 	m_object->setPosition(newPos);
@@ -57,20 +63,30 @@ void DynamicBody::integrate(float dt)
 	m_linearAcceleration = m_force * m_massInverse;
 	m_linearVelocity += m_linearAcceleration * dt;
 	//Rotation
-	m_angularMomentum += m_torque * dt;
 	glm::quat q = glm::toQuat(m_shape->getRotation());
 	glm::quat qNext = q + dt * 0.5f * glm::quat(0,m_angularVelocity) * q;
 	qNext = glm::normalize(qNext);
 	glm::mat3 R = glm::toMat3(qNext);
 	m_shape->setRotation(R);
 	m_object->rotate(R);
+
+	m_angularMomentum += m_torque * dt;
+
 	m_angularVelocity += R * m_localInertiaTensorInverse * glm::transpose(R) * m_angularMomentum;
+	//Angular Dampening
+	//glm::vec3 dampSpin = glm::vec3(0.0, -15.0, 0.0);
+	//if (m_angularVelocity.y > EPSILON)
+	//	m_angularVelocity += R * m_localInertiaTensorInverse * glm::transpose(R) * dampSpin *dt *dt ;
 
 }
-
 void DynamicBody::applyForce(glm::vec3 force)
 {
 	m_force += force;
+}
+
+void DynamicBody::applyTorque(glm::vec3 torque)
+{
+	m_torque += torque;
 }
 
 void DynamicBody::setInitialVelocity(glm::vec3 v)

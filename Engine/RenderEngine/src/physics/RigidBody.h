@@ -13,12 +13,14 @@ public:
 	//update
 	virtual void integrate(float dt) = 0;
 	virtual void applyForce(glm::vec3 force) = 0;
+	virtual void applyTorque(glm::vec3 torque) = 0;
 	virtual void setInitialVelocity(glm::vec3 v) = 0;
 	virtual void setInitialAngularVelocity(glm::vec3 w) = 0;
 	void setLinearVelocity(glm::vec3 v);
 	void setLinearMomentum(glm::vec3 p);
 	void setAngularVelocity(glm::vec3 w);
 	void clearForce();
+	void clearTorque();
 	//Getters
 	Object* getObject();
 	Shape* getShape();
@@ -33,7 +35,8 @@ public:
 	int getType();
 
 	float getBounciness();
-	float getFrictionCoefficient();
+	float getStaticFriction();
+	float getDynamicFriction();
 	float getMass();
 	float getMassInverse();
 protected:
@@ -43,8 +46,9 @@ protected:
 	
 	float m_mass;
 	float m_massInverse;
-	float m_bounciness;
-	float m_frictionCoefficient;
+	float m_coefficientOfRestitution;
+	float m_staticFriction;
+	float m_dynamicFriction;
 
 	glm::vec3 m_linearVelocity;
 	glm::vec3 m_linearAcceleration;

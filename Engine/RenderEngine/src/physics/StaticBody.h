@@ -5,6 +5,7 @@ public:
 	StaticBody(Object* object, int shape);
 	void integrate(float dt) override;
 	void applyForce(glm::vec3 force) override;
+	void applyTorque(glm::vec3 torque) override;
 	void setInitialVelocity(glm::vec3 v);
 	void setInitialAngularVelocity(glm::vec3 w) override;
 	void setLinearVelocity(glm::vec3 v);

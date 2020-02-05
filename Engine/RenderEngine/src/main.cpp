@@ -136,7 +136,7 @@ void sceneInit() {
 	RigidBody* rs2 = new DynamicBody(ball000, SPHERE, billardBallMass);
 	std::cout << rs2->getMass() << std::endl;
 	rbp->addRigidBody(rs2);
-	rs2->setInitialVelocity(glm::vec3(0.0, 0.0, -10.0));
+	rs2->setInitialVelocity(glm::vec3(0.0, 0.0, -14.0));
 	//rs2->setInitialAngularVelocity(glm::vec3(10.0, 0.0, 0.0));
 
 	Object* ball001 = new Object("ball001",sphereMesh, billard_1);
@@ -155,17 +155,17 @@ void sceneInit() {
 	rbp->addRigidBody(new DynamicBody(ball004, SPHERE, billardBallMass));
 
 	Object* ball005 = new Object("ball005", sphereMesh, billard_5);
-	ball005->setTransforms(glm::vec3(-4.2, 1.0, 6.0), glm::vec3(0.0), glm::vec3(1.0));
+	ball005->setTransforms(glm::vec3(-4.2, 1.0, -6.0), glm::vec3(0.0), glm::vec3(1.0));
 	scene->addObject(ball005);
 	rbp->addRigidBody(new DynamicBody(ball005, SPHERE, billardBallMass));
 
 	Object* ball006 = new Object("ball006", sphereMesh, billard_6);
-	ball006->setTransforms(glm::vec3(5.0, 1.0, 3.0), glm::vec3(0.0), glm::vec3(1.0));
+	ball006->setTransforms(glm::vec3(5.0, 1.0, -3.0), glm::vec3(0.0), glm::vec3(1.0));
 	scene->addObject(ball006);
 	rbp->addRigidBody(new DynamicBody(ball006, SPHERE, billardBallMass));
 
 	Object* ball007 = new Object("ball007", sphereMesh, billard_7);
-	ball007->setTransforms(glm::vec3(-7.0, 1.0, 10.0), glm::vec3(0.0), glm::vec3(1.0));
+	ball007->setTransforms(glm::vec3(-7.0, 1.0, -10.0), glm::vec3(0.0), glm::vec3(1.0));
 	scene->addObject(ball007);
 	rbp->addRigidBody(new DynamicBody(ball007, SPHERE, billardBallMass));
 
@@ -282,9 +282,9 @@ void MainMenuBar(GLFWwindow* window)
 				ss.str("");
 				ImGui::NextColumn();
 				ss << "Applied Force:";
-				ss << "\nX: " << rigidBodys->at(selected)->getForce().x << " kgm/s^2 ";
-				ss << "\nY: " << rigidBodys->at(selected)->getForce().y << " kgm/s^2 ";
-				ss << "\nZ: " << rigidBodys->at(selected)->getForce().z << " kgm/s^2 ";
+				ss << "\nX: " << rigidBodys->at(selected)->getForce().x << " kg m/s^2 ";
+				ss << "\nY: " << rigidBodys->at(selected)->getForce().y << " kg m/s^2 ";
+				ss << "\nZ: " << rigidBodys->at(selected)->getForce().z << " kg m/s^2 ";
 				ImGui::Text(ss.str().c_str(), selected);
 				ss.str("");
 				ImGui::NextColumn();

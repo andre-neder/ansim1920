@@ -19,6 +19,10 @@ void StaticBody::applyForce(glm::vec3 force)
 	//Do nothing
 }
 
+void StaticBody::applyImpuls(glm::vec3 p)
+{
+}
+
 void StaticBody::applyTorque(glm::vec3 torque)
 {
 }

@@ -84,6 +84,11 @@ void DynamicBody::applyForce(glm::vec3 force)
 	m_force += force;
 }
 
+void DynamicBody::applyImpuls(glm::vec3 p)
+{
+	
+}
+
 void DynamicBody::applyTorque(glm::vec3 torque)
 {
 	m_torque += torque;

@@ -13,6 +13,7 @@ public:
 	//update
 	virtual void integrate(float dt) = 0;
 	virtual void applyForce(glm::vec3 force) = 0;
+	virtual void applyImpuls(glm::vec3 p) = 0;
 	virtual void applyTorque(glm::vec3 torque) = 0;
 	virtual void setInitialVelocity(glm::vec3 v) = 0;
 	virtual void setInitialAngularVelocity(glm::vec3 w) = 0;

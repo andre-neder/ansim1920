@@ -9,7 +9,8 @@
 class Physics {
 public:
 	Physics();
-	glm::vec3 m_gravity;
+	glm::vec3 getGravity();
 
 protected:
+	glm::vec3 m_gravity;
 };

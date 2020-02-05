@@ -8,7 +8,7 @@ RigidBodyPhysics::RigidBodyPhysics()
 void RigidBodyPhysics::addRigidBody(RigidBody* r)
 {
 	m_rigidBodys.push_back(r);
-	//r->applyForce(m_gravity);
+	//r->applyForce(getGravity());
 }
 
 void RigidBodyPhysics::update(float dt)
@@ -18,7 +18,7 @@ void RigidBodyPhysics::update(float dt)
 	for (int i = 0; i < m_rigidBodys.size(); i++) {
 		m_rigidBodys[i]->clearForce();
 		m_rigidBodys[i]->clearTorque();
-		m_rigidBodys[i]->applyForce(m_gravity * m_rigidBodys[i]->getMass());
+		m_rigidBodys[i]->applyForce(getGravity() * m_rigidBodys[i]->getMass());
 		for (int j = 0; j < m_rigidBodys.size(); j++) {
 			if (i <= j) // Collision with itself
 				continue;
@@ -117,46 +117,53 @@ void RigidBodyPhysics::calculateCollision(Collision* c)
 	float s = -(1.0 + c->i->getBounciness()) * (glm::dot(c->normal, c->i->getLinearVelocity() - c->j->getLinearVelocity()) + (glm::dot(c->i->getLinearVelocity(), ra_cross_n) - glm::dot(c->j->getAngularVelocity(), rb_cross_n)));
 	float t = c->i->getMassInverse() + c->j->getMassInverse() + glm::dot(ra_cross_n * c->i->getLocalInertiaTensorInverse(), ra_cross_n) + glm::dot(rb_cross_n * c->j->getLocalInertiaTensorInverse(), rb_cross_n);
 	float p = s / t;
-
-		
-	//Friction
-	
-	//float s = -(1.0 + c->i->getBounciness()) * (glm::dot(c->normal, c->i->getLinearVelocity() - c->j->getLinearVelocity()));
-	//float t = c->i->getMassInverse() + c->j->getMassInverse();
-	//float p = s / t;
-
-	//glm::vec3 vr = (c->j->getLinearVelocity() - c->i->getLinearVelocity());
-	//glm::vec3 tangent = glm::normalize(vr - glm::dot(vr, c->normal) * c->normal);
-	//float g = -(1.0 + c->i->getBounciness()) * (glm::dot(tangent, c->i->getLinearVelocity() - c->j->getLinearVelocity()));
-	//float q = g / t;
-
-	//c->i->setLinearVelocity(c->i->getLinearVelocity() + (p * c->i->getMassInverse()) * c->normal);
-	//c->j->setLinearVelocity(c->j->getLinearVelocity() - (p * c->j->getMassInverse()) * c->normal);
-
-
-	//float jt = -glm::dot(vr, tangent);
-	//jt /= c->i->getMassInverse() + c->j->getMassInverse();
-	//float mu_static = glm::sqrt(c->i->getStaticFriction() * c->i->getStaticFriction() + c->j->getStaticFriction() * c->j->getStaticFriction());
-
-	//glm::vec3 frictionImpuls;
-	//if (glm::abs(jt) < q * mu_static)
-	//	frictionImpuls = jt * tangent;
-	//else {
-	//	float mu_dynamic = glm::sqrt(c->i->getDynamicFriction() * c->i->getDynamicFriction() + c->j->getDynamicFriction() * c->j->getDynamicFriction());
-	//	frictionImpuls = -q * tangent * mu_dynamic;
-	//}
-
-	//c->i->setLinearVelocity(c->i->getLinearVelocity() - (c->i->getMassInverse()) * frictionImpuls);
-	//c->j->setLinearVelocity(c->j->getLinearVelocity() + (c->j->getMassInverse()) * frictionImpuls);
-
-	//Rotation
-	//glm::vec3 rA_cross_pn = glm::cross(c->normal * p, rA);
-	//glm::vec3 rB_cross_pn = glm::cross(c->normal* p,rB);
-	//c->i->setAngularVelocity(c->i->getAngularVelocity() + c->i->getLocalInertiaTensorInverse() * rA_cross_pn);
-	//c->j->setAngularVelocity(c->j->getAngularVelocity() - c->j->getLocalInertiaTensorInverse() * rB_cross_pn);
-
 	//Translation
 	c->i->setLinearVelocity(c->i->getLinearVelocity() + (p * c->i->getMassInverse()) * c->normal);
 	c->j->setLinearVelocity(c->j->getLinearVelocity() - (p * c->j->getMassInverse()) * c->normal);
+	//Rotation
+	glm::vec3 rA_cross_pn = glm::cross(c->normal * p, rA);
+	glm::vec3 rB_cross_pn = glm::cross(c->normal* p,rB);
+	c->i->setAngularVelocity(c->i->getAngularVelocity() + c->i->getLocalInertiaTensorInverse() * rA_cross_pn);
+	c->j->setAngularVelocity(c->j->getAngularVelocity() - c->j->getLocalInertiaTensorInverse() * rB_cross_pn);
+
+	//NormalForce
+	if (c->i->getType() == STATIC && glm::abs(glm::normalize(c->normal)) == glm::abs(glm::normalize(getGravity()))) {
+		c->j->applyForce(-getGravity() * c->j->getMass());
+	}
+	if (c->j->getType() == STATIC && glm::abs(glm::normalize(c->normal)) == glm::abs(glm::normalize(getGravity()))) {
+		c->i->applyForce(-getGravity() * c->i->getMass());
+	}
+
+	//Friction
+	glm::vec3 vr = (c->j->getLinearVelocity() - c->i->getLinearVelocity());
+	glm::vec3 tangent = vr - glm::dot(vr, c->normal) * c->normal;
+	if (tangent != glm::vec3(0.0))
+		tangent = glm::normalize(tangent);
+	glm::vec3 ra_cross_t = glm::cross(rA, tangent);
+	glm::vec3 rb_cross_t = glm::cross(rB, tangent);
+	float g = -(1.0 + c->i->getBounciness()) * (glm::dot(tangent, c->i->getLinearVelocity() - c->j->getLinearVelocity()) + (glm::dot(c->i->getLinearVelocity(), ra_cross_t) - glm::dot(c->j->getAngularVelocity(), rb_cross_t)));
+	float h = c->i->getMassInverse() + c->j->getMassInverse() + glm::dot(ra_cross_t * c->i->getLocalInertiaTensorInverse(), ra_cross_t) + glm::dot(rb_cross_t * c->j->getLocalInertiaTensorInverse(), rb_cross_t);
+	float q = g / h;
+
+	float jt = -glm::dot(vr, tangent);
+	jt /= c->i->getMassInverse() + c->j->getMassInverse();
+	float mu_static = glm::sqrt(c->i->getStaticFriction() * c->i->getStaticFriction() + c->j->getStaticFriction() * c->j->getStaticFriction());
+
+	glm::vec3 frictionImpuls;
+	if (glm::abs(jt) < q * mu_static)
+		frictionImpuls = jt * tangent;
+	else {
+		float mu_dynamic = glm::sqrt(c->i->getDynamicFriction() * c->i->getDynamicFriction() + c->j->getDynamicFriction() * c->j->getDynamicFriction());
+		frictionImpuls = -q * tangent * mu_dynamic;
+	}
+	std::cout << tangent.x <<" " << tangent.y << " " << tangent.z << std::endl;
+	c->i->setLinearVelocity(c->i->getLinearVelocity() - (c->i->getMassInverse()) * frictionImpuls);
+	c->j->setLinearVelocity(c->j->getLinearVelocity() + (c->j->getMassInverse()) * frictionImpuls);
+
+	glm::vec3 rA_cross_f = glm::cross(frictionImpuls, rA);
+	glm::vec3 rB_cross_f = glm::cross(frictionImpuls ,rB);
+	c->i->setAngularVelocity(c->i->getAngularVelocity() + c->i->getLocalInertiaTensorInverse() * rA_cross_f);
+	c->j->setAngularVelocity(c->j->getAngularVelocity() - c->j->getLocalInertiaTensorInverse() * rB_cross_f);
+
 }
 

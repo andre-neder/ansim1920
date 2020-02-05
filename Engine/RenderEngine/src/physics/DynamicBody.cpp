@@ -46,7 +46,7 @@ void DynamicBody::integrate(float dt)
 	//Translation
 	if (glm::abs(m_linearVelocity).x < EPSILON)
 		m_linearVelocity.x = 0.0;
-	//if (glm::abs(m_linearVelocity).y < EPSILON)
+	if (glm::abs(m_linearVelocity).y < EPSILON)
 		m_linearVelocity.y = 0.0;
 	if (glm::abs(m_linearVelocity).z < EPSILON)
 		m_linearVelocity.z = 0.0;

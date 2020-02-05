@@ -1,3 +1,4 @@
 \.vs
 Engine/Release/*
 Engine/Debug/*
+Engine/RenderEngine/src/Defines.h

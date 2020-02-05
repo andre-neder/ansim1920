@@ -120,25 +120,34 @@ void RigidBodyPhysics::calculateCollision(Collision* c)
 
 		
 	//Friction
-	//glm::vec3 vr = (c->j->getLinearVelocity() - c->i->getLinearVelocity());
-	//glm::vec3 tangent = glm::normalize(vr - glm::dot(vr,c->normal) * c->normal);
-	//float s = -(1.0 + c->i->getBounciness()) * (glm::dot(tangent, c->i->getLinearVelocity() - c->j->getLinearVelocity()));
+	
+	//float s = -(1.0 + c->i->getBounciness()) * (glm::dot(c->normal, c->i->getLinearVelocity() - c->j->getLinearVelocity()));
 	//float t = c->i->getMassInverse() + c->j->getMassInverse();
 	//float p = s / t;
+
+	//glm::vec3 vr = (c->j->getLinearVelocity() - c->i->getLinearVelocity());
+	//glm::vec3 tangent = glm::normalize(vr - glm::dot(vr, c->normal) * c->normal);
+	//float g = -(1.0 + c->i->getBounciness()) * (glm::dot(tangent, c->i->getLinearVelocity() - c->j->getLinearVelocity()));
+	//float q = g / t;
+
+	//c->i->setLinearVelocity(c->i->getLinearVelocity() + (p * c->i->getMassInverse()) * c->normal);
+	//c->j->setLinearVelocity(c->j->getLinearVelocity() - (p * c->j->getMassInverse()) * c->normal);
+
 
 	//float jt = -glm::dot(vr, tangent);
 	//jt /= c->i->getMassInverse() + c->j->getMassInverse();
 	//float mu_static = glm::sqrt(c->i->getStaticFriction() * c->i->getStaticFriction() + c->j->getStaticFriction() * c->j->getStaticFriction());
 
 	//glm::vec3 frictionImpuls;
-	//if (glm::abs(jt) < p * mu_static)
+	//if (glm::abs(jt) < q * mu_static)
 	//	frictionImpuls = jt * tangent;
 	//else {
 	//	float mu_dynamic = glm::sqrt(c->i->getDynamicFriction() * c->i->getDynamicFriction() + c->j->getDynamicFriction() * c->j->getDynamicFriction());
-	//	frictionImpuls = -p * tangent * mu_dynamic;
+	//	frictionImpuls = -q * tangent * mu_dynamic;
 	//}
-	//c->i->setLinearVelocity(c->i->getLinearVelocity() + (p * c->i->getMassInverse()) * frictionImpuls);
-	//c->j->setLinearVelocity(c->j->getLinearVelocity() - (p * c->j->getMassInverse()) * frictionImpuls);
+
+	//c->i->setLinearVelocity(c->i->getLinearVelocity() - (c->i->getMassInverse()) * frictionImpuls);
+	//c->j->setLinearVelocity(c->j->getLinearVelocity() + (c->j->getMassInverse()) * frictionImpuls);
 
 	//Rotation
 	//glm::vec3 rA_cross_pn = glm::cross(c->normal * p, rA);

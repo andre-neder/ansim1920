@@ -15,7 +15,7 @@ RigidBody::RigidBody(Object* object, int shape)
 
 	m_coefficientOfRestitution = 0.95f;
 	m_staticFriction = 0.04;
-	m_dynamicFriction = 0.2;
+	m_dynamicFriction = 0.04;
 	m_linearVelocity = glm::vec3(0.0);
 	m_linearAcceleration = glm::vec3(0.0);
 	m_linearMomentum = glm::vec3(0.0);

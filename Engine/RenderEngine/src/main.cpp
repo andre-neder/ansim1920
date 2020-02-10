@@ -15,6 +15,7 @@
 #include "../vendor/include/imgui/imgui_impl_glfw_gl3.h"
 #include "Defines.h"
 #include "physics/RigidBodyPhysics.h"
+#include <random>
 
 Instance* Instance::m_instance = 0;
 Instance* instance = instance->getInstance();
@@ -237,7 +238,7 @@ void MainMenuBar(GLFWwindow* window)
 		ImGui::EndMainMenuBar();
 	}
 }
-
+glm::vec3 shoot = glm::vec3(0.0);
  void ShowSceneGraph()
 {
 	ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
@@ -262,11 +263,20 @@ void MainMenuBar(GLFWwindow* window)
 			ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 				ImGui::Text(rigidBodys->at(selected)->getObject()->getName().c_str(), selected);
 				ImGui::Separator();
+				ImGui::Columns(2);
 				std::stringstream ss;
 				ss << "Mass: " << rigidBodys->at(selected)->getMass();
 				ImGui::Text(ss.str().c_str(), selected);
 				ss.str("");
-				ImGui::Columns(2);
+				ImGui::NextColumn();
+				ImGui::SliderFloat3("Velocity", glm::value_ptr(shoot), -10.0, 10.0);
+				if (ImGui::Button("Shoot", ImVec2(180, 20))) {
+					rigidBodys->at(selected)->setLinearVelocity(shoot);
+					shoot = glm::vec3(0.0);
+				}	
+				if (ImGui::Button("Shoot Random", ImVec2(180, 20)))
+					rigidBodys->at(selected)->setLinearVelocity(glm::vec3(std::rand() % 20 - 10, std::rand() % 20 - 10, std::rand() % 20 - 10));
+				ImGui::NextColumn();
 				ss << "Linear Velocity:";
 				ss << "\nX: " << rigidBodys->at(selected)->getLinearVelocity().x << "m/s ";
 				ss << "\nY: " << rigidBodys->at(selected)->getLinearVelocity().y << "m/s ";

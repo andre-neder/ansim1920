@@ -1,6 +1,6 @@
 #include "DynamicBody.h"
 #include "glm/gtx/quaternion.hpp"
-#define EPSILON 0.003f
+#define EPSILON 0.03f
 
 DynamicBody::DynamicBody(Object* object, int shape) : RigidBody(object, shape)
 {

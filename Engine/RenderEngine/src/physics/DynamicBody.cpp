@@ -50,12 +50,12 @@ void DynamicBody::integrate(float dt)
 		m_linearVelocity.y = 0.0;
 	if (glm::abs(m_linearVelocity).z < EPSILON)
 		m_linearVelocity.z = 0.0;
-	//if (glm::abs(m_angularVelocity).x < EPSILON)
-	//	m_angularVelocity.x = 0.0;
-	//if (glm::abs(m_angularVelocity).y < EPSILON)
-	//	m_angularVelocity.y = 0.0;
-	//if (glm::abs(m_angularVelocity).z < EPSILON)
-	//	m_angularVelocity.z = 0.0;
+	if (glm::abs(m_angularVelocity).x < EPSILON)
+		m_angularVelocity.x = 0.0;
+	if (glm::abs(m_angularVelocity).y < EPSILON)
+		m_angularVelocity.y = 0.0;
+	if (glm::abs(m_angularVelocity).z < EPSILON)
+		m_angularVelocity.z = 0.0;
 	glm::vec3 oldPos = m_shape->getPosition();
 	glm::vec3 newPos = oldPos + m_linearVelocity * dt;
 	m_object->setPosition(newPos);
